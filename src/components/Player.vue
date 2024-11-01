@@ -27,6 +27,7 @@
         <div class="container" @click.stop>
           <img
             :src="currentTrack.al && currentTrack.al.picUrl | resizeImage(224)"
+            loading="lazy"
             @click="goToAlbum"
           />
           <div class="track-info" :title="audioSource">
@@ -49,7 +50,11 @@
           </div>
           <div class="like-button">
             <button-icon
-              :title="$t('player.like')"
+              :title="
+                player.isCurrentTrackLiked
+                  ? $t('player.unlike')
+                  : $t('player.like')
+              "
               @click.native="likeATrack(player.currentTrack.id)"
             >
               <svg-icon
@@ -71,25 +76,23 @@
           <button-icon
             v-show="!player.isPersonalFM"
             :title="$t('player.previous')"
-            @click.native="player.playPrevTrack"
+            @click.native="playPrevTrack"
             ><svg-icon icon-class="previous"
           /></button-icon>
           <button-icon
             v-show="player.isPersonalFM"
             title="不喜欢"
-            @click.native="player.moveToFMTrash"
+            @click.native="moveToFMTrash"
             ><svg-icon icon-class="thumbs-down"
           /></button-icon>
           <button-icon
             class="play"
             :title="$t(player.playing ? 'player.pause' : 'player.play')"
-            @click.native="player.playOrPause"
+            @click.native="playOrPause"
           >
             <svg-icon :icon-class="player.playing ? 'pause' : 'play'"
           /></button-icon>
-          <button-icon
-            :title="$t('player.next')"
-            @click.native="player.playNextTrack"
+          <button-icon :title="$t('player.next')" @click.native="playNextTrack"
             ><svg-icon icon-class="next"
           /></button-icon>
         </div>
@@ -117,7 +120,7 @@
                 ? $t('player.repeatTrack')
                 : $t('player.repeat')
             "
-            @click.native="player.switchRepeatMode"
+            @click.native="switchRepeatMode"
           >
             <svg-icon
               v-show="player.repeatMode !== 'one'"
@@ -131,11 +134,18 @@
           <button-icon
             :class="{ active: player.shuffle, disabled: player.isPersonalFM }"
             :title="$t('player.shuffle')"
-            @click.native="player.switchShuffle"
+            @click.native="switchShuffle"
             ><svg-icon icon-class="shuffle"
           /></button-icon>
+          <button-icon
+            v-if="settings.enableReversedMode"
+            :class="{ active: player.reversed, disabled: player.isPersonalFM }"
+            :title="$t('player.reversed')"
+            @click.native="switchReversed"
+            ><svg-icon icon-class="sort-up"
+          /></button-icon>
           <div class="volume-control">
-            <button-icon :title="$t('player.mute')" @click.native="player.mute">
+            <button-icon :title="$t('player.mute')" @click.native="mute">
               <svg-icon v-show="volume > 0.5" icon-class="volume" />
               <svg-icon v-show="volume === 0" icon-class="volume-mute" />
               <svg-icon
@@ -177,6 +187,7 @@ import '@/assets/css/slider.css';
 import ButtonIcon from '@/components/ButtonIcon.vue';
 import VueSlider from 'vue-slider-component';
 import { goToListSource, hasListSource } from '@/utils/playList';
+import { formatTrackTime } from '@/utils/common';
 
 export default {
   name: 'Player',
@@ -209,6 +220,19 @@ export default {
   methods: {
     ...mapMutations(['toggleLyrics']),
     ...mapActions(['showToast', 'likeATrack']),
+    playPrevTrack() {
+      this.player.playPrevTrack();
+    },
+    playOrPause() {
+      this.player.playOrPause();
+    },
+    playNextTrack() {
+      if (this.player.isPersonalFM) {
+        this.player.playNextFMTrack();
+      } else {
+        this.player.playNextTrack();
+      }
+    },
     goToNextTracksPage() {
       if (this.player.isPersonalFM) return;
       this.$route.name === 'next'
@@ -216,10 +240,7 @@ export default {
         : this.$router.push({ name: 'next' });
     },
     formatTrackTime(value) {
-      if (!value) return '';
-      let min = ~~((value / 60) % 60);
-      let sec = (~~(value % 60)).toString().padStart(2, '0');
-      return `${min}:${sec}`;
+      return formatTrackTime(value);
     },
     hasList() {
       return hasListSource();
@@ -233,6 +254,21 @@ export default {
     },
     goToArtist(id) {
       this.$router.push({ path: '/artist/' + id });
+    },
+    moveToFMTrash() {
+      this.player.moveToFMTrash();
+    },
+    switchRepeatMode() {
+      this.player.switchRepeatMode();
+    },
+    switchShuffle() {
+      this.player.switchShuffle();
+    },
+    switchReversed() {
+      this.player.switchReversed();
+    },
+    mute() {
+      this.player.mute();
     },
   },
 };

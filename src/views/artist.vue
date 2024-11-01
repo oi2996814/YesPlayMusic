@@ -2,7 +2,7 @@
   <div v-show="show" class="artist-page">
     <div class="artist-info">
       <div class="head">
-        <img :src="artist.img1v1Url | resizeImage(1024)" />
+        <img :src="artist.img1v1Url | resizeImage(1024)" loading="lazy" />
       </div>
       <div>
         <div class="name">{{ artist.name }}</div>
@@ -75,7 +75,7 @@
             @mouseleave="mvHover = false"
             @click="goToMv(latestMV.id)"
           >
-            <img :src="latestMV.coverUrl" />
+            <img :src="latestMV.coverUrl" loading="lazy" />
             <transition name="fade">
               <div
                 v-show="mvHover"
@@ -127,7 +127,7 @@
     <div v-if="mvs.length !== 0" id="mvs" class="mvs">
       <div class="section-title"
         >MVs
-        <router-link v-show="hasMoreMV" :to="`/artist/${this.artist.id}/mv`">{{
+        <router-link v-show="hasMoreMV" :to="`/artist/${artist.id}/mv`">{{
           $t('home.seeMore')
         }}</router-link>
       </div>
@@ -185,6 +185,7 @@ import {
   followAArtist,
   similarArtists,
 } from '@/api/artist';
+import { getTrackDetail } from '@/api/track';
 import locale from '@/locale';
 import { isAccountLoggedIn } from '@/utils/auth';
 import NProgress from 'nprogress';
@@ -241,7 +242,9 @@ export default {
   computed: {
     ...mapState(['player']),
     albums() {
-      return this.albumsData.filter(a => a.type === '专辑');
+      return this.albumsData.filter(
+        a => a.type === '专辑' || a.type === '精选集'
+      );
     },
     eps() {
       return this.albumsData.filter(a =>
@@ -276,7 +279,7 @@ export default {
       this.$parent.$refs.main.scrollTo({ top: 0 });
       getArtist(id).then(data => {
         this.artist = data.artist;
-        this.popularTracks = data.hotSongs;
+        this.setPopularTracks(data.hotSongs);
         if (next !== undefined) next();
         NProgress.done();
         this.show = true;
@@ -289,8 +292,16 @@ export default {
         this.mvs = data.mvs;
         this.hasMoreMV = data.hasMore;
       });
-      similarArtists(id).then(data => {
-        this.similarArtists = data.artists;
+      if (isAccountLoggedIn()) {
+        similarArtists(id).then(data => {
+          this.similarArtists = data.artists;
+        });
+      }
+    },
+    setPopularTracks(hotSongs) {
+      const trackIDs = hotSongs.map(t => t.id);
+      getTrackDetail(trackIDs.join(',')).then(data => {
+        this.popularTracks = data.songs;
       });
     },
     goToAlbum(id) {

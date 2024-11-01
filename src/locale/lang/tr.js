@@ -28,7 +28,14 @@ export default {
     albums: 'Albümler',
     artists: 'Sanatçılar',
     mvs: 'MVs',
+    cloudDisk: 'Cloud Disk',
     newPlayList: 'Yeni Çalma Listesi',
+    uploadSongs: 'Upload Songs',
+    playHistory: {
+      title: 'Play History',
+      week: 'Latest Week',
+      all: 'All Time',
+    },
     userProfileMenu: {
       settings: 'Ayarlar',
       logout: 'Çıkış Yap',
@@ -91,6 +98,7 @@ export default {
   },
   player: {
     like: 'Beğen',
+    unlike: 'Aksine',
     previous: 'Önceki Müzik',
     next: 'Sonraki Müzik',
     repeat: 'Tekrarla',
@@ -100,6 +108,8 @@ export default {
     pause: 'Durdur',
     mute: 'Sesi kapat',
     nextUp: 'Sıradaki',
+    translationLyric: 'şarkı sözleri (çeviri)',
+    PronunciationLyric: 'şarkı sözleri (çeviri)',
   },
   modal: {
     close: 'Kapat',
@@ -117,6 +127,17 @@ export default {
     settings: 'Ayarlar',
     logout: 'ÇIKIŞ YAP',
     language: 'Diller',
+    lyric: 'Şarkı Sözleri',
+    others: 'Diğerleri',
+    customization: 'Özelleştirme',
+    MusicGenrePreference: {
+      text: 'Müzik Dili Tercihi',
+      none: 'Tercih yok',
+      mandarin: 'Çince dili',
+      western: 'Avrupa ve Amerika',
+      korean: 'Korece',
+      japanese: 'Japonca',
+    },
     musicQuality: {
       text: 'Müzik Kalitesi',
       low: 'Düşük',
@@ -150,7 +171,9 @@ export default {
     showPlaylistsByAppleMusic: "Apple Music'in Çalma Listelerini Göster",
     enableDiscordRichPresence: 'Discord gösterimini aktifleştir',
     showLibraryDefault: 'Kitaplık Varsayılanını göster',
-    subTitleDefault: 'Sub title alia default',
+    subTitleDefault: 'Show Alias for Subtitle by default',
+    enableReversedMode: 'Enable Reversed Mode (Experimental)',
+    enableCustomTitlebar: 'Enable custom title bar (Need restart)',
     lyricsBackground: {
       text: 'Şarkı Sözleri Arka Planını Göster',
       off: 'kapalı',
@@ -163,12 +186,52 @@ export default {
       exit: 'Exit',
       minimizeToTray: 'Küçült',
     },
+    unm: {
+      enable: 'Enable',
+      audioSource: {
+        title: 'Audio Sources',
+      },
+      enableFlac: {
+        title: 'Enable FLAC Sources',
+        desc: 'To take effect, it may be required to clear the cache after enabling this function.',
+      },
+      searchMode: {
+        title: 'Audio Search Mode',
+        fast: 'Speed Priority',
+        order: 'Order Priority',
+      },
+      cookie: {
+        joox: 'Cookie for Joox use',
+        qq: 'Cookie for QQ use',
+        desc1: 'Click here for the configuration instruction. ',
+        desc2: 'Leave empty to pick up the default value',
+      },
+      ytdl: 'The youtube-dl Executable File for YtDl',
+      proxy: {
+        title: 'Proxy Server for UNM',
+        desc1:
+          'The proxy server to use for requesting services such as YouTube',
+        desc2: 'Leave empty to pick up the default value',
+      },
+    },
   },
   contextMenu: {
     play: 'Oynat',
     addToQueue: 'Sonrakini Oynat',
     saveToMyLikedSongs: 'Beğendiğim Müziklere Kaydet',
     removeFromMyLikedMüzikler: 'Beğendiğim Müziklerden Kaldır',
+    saveToLibrary: 'Save to library',
+    removeFromLibrary: 'Remove from library',
+    addToPlaylist: 'Add to playlist',
+    searchInPlaylist: 'Search in playlist',
+    copyUrl: 'Copy URL',
+    openInBrowser: 'Open in Browser',
+    allPlaylists: 'All Playlists',
+    minePlaylists: 'My Playlists',
+    likedPlaylists: 'Liked Playlists',
+    cardiacMode: 'Cardiac Mode',
+    copyLyric: 'Copy Lyric',
+    copyLyricWithTranslation: 'Copy Lyric With Translation',
   },
   toast: {
     savedToMyLikedSongs: 'Beğendiğim Müziklere Kaydet',

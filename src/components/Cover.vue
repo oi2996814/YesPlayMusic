@@ -16,7 +16,7 @@
           ><svg-icon icon-class="play" />
         </button>
       </div>
-      <img :src="imageUrl" :style="imageStyles" />
+      <img :src="imageUrl" :style="imageStyles" loading="lazy" />
       <transition v-if="coverHover || alwaysShowShadow" name="fade">
         <div
           v-show="focus || alwaysShowShadow"
@@ -135,7 +135,7 @@ img {
   cursor: default;
   transition: 0.2s;
   .svg-icon {
-    height: 44%;
+    width: 50%;
     margin: {
       left: 4px;
     }

@@ -27,11 +27,7 @@
           <span
             v-if="
               [
-                5277771961,
-                5277965913,
-                5277969451,
-                5277778542,
-                5278068783,
+                5277771961, 5277965913, 5277969451, 5277778542, 5278068783,
               ].includes(playlist.id)
             "
             style="font-weight: 600"
@@ -143,9 +139,12 @@
 
     <div v-if="isLikeSongsPage" class="user-info">
       <h1>
-        <img class="avatar" :src="data.user.avatarUrl | resizeImage" />{{
-          data.user.nickname
-        }}{{ $t('library.sLikedSongs') }}
+        <img
+          class="avatar"
+          :src="data.user.avatarUrl | resizeImage"
+          loading="lazy"
+        />
+        {{ data.user.nickname }}{{ $t('library.sLikedSongs') }}
       </h1>
       <div class="search-box-likepage" @click="searchInPlaylist()">
         <div class="container" :class="{ active: inputFocus }">
@@ -318,6 +317,10 @@ const specialPlaylist = {
   2821115454: {
     name: '一周原创发现',
     gradient: 'gradient-blue-purple',
+  },
+  2829883282: {
+    name: '华语私人雷达',
+    gradient: 'gradient-yellow-red',
   },
   3136952023: {
     name: '私人雷达',

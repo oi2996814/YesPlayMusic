@@ -15,6 +15,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 export default {
   name: 'ContextMenu',
   data() {
@@ -24,10 +26,14 @@ export default {
       left: '0px',
     };
   },
+  computed: {
+    ...mapState(['player']),
+  },
   methods: {
     setMenu(top, left) {
+      let heightOffset = this.player.enabled ? 64 : 0;
       let largestHeight =
-        window.innerHeight - this.$refs.menu.offsetHeight - 25;
+        window.innerHeight - this.$refs.menu.offsetHeight - heightOffset;
       let largestWidth = window.innerWidth - this.$refs.menu.offsetWidth - 25;
       if (top > largestHeight) top = largestHeight;
       if (left > largestWidth) left = largestWidth;
@@ -74,11 +80,13 @@ export default {
   box-shadow: 0 6px 12px -4px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(0, 0, 0, 0.06);
   backdrop-filter: blur(12px);
-  border-radius: 8px;
+  border-radius: 12px;
   box-sizing: border-box;
   padding: 6px;
   z-index: 1000;
   -webkit-app-region: no-drag;
+  transition: background 125ms ease-out, opacity 125ms ease-out,
+    transform 125ms ease-out;
 
   &:focus {
     outline: none;
@@ -88,8 +96,9 @@ export default {
 [data-theme='dark'] {
   .menu {
     background: rgba(36, 36, 36, 0.78);
-    backdrop-filter: blur(16px) contrast(120%);
+    backdrop-filter: blur(16px) contrast(120%) brightness(60%);
     border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.08);
   }
   .menu .item:hover {
     color: var(--color-text);
@@ -106,7 +115,7 @@ export default {
   font-weight: 600;
   font-size: 14px;
   padding: 10px 14px;
-  border-radius: 7px;
+  border-radius: 8px;
   cursor: default;
   color: var(--color-text);
   display: flex;
@@ -114,6 +123,11 @@ export default {
   &:hover {
     color: var(--color-primary);
     background: var(--color-primary-bg-for-transparent);
+    transition: opacity 125ms ease-out, transform 125ms ease-out;
+  }
+  &:active {
+    opacity: 0.75;
+    transform: scale(0.95);
   }
 
   .svg-icon {
@@ -143,7 +157,7 @@ hr {
     border-radius: 4px;
   }
   .info {
-    margin-left: 8px;
+    margin-left: 10px;
   }
   .title {
     font-size: 16px;

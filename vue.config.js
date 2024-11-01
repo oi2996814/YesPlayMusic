@@ -1,9 +1,12 @@
+const webpack = require('webpack');
 const path = require('path');
 function resolve(dir) {
   return path.join(__dirname, dir);
 }
 
 module.exports = {
+  // 生产环境打包不输出 map
+  productionSourceMap: false,
   devServer: {
     disableHostCheck: true,
     port: process.env.DEV_SERVER_PORT || 8080,
@@ -53,16 +56,37 @@ module.exports = {
         symbolId: 'icon-[name]',
       })
       .end();
+    config.module
+      .rule('napi')
+      .test(/\.node$/)
+      .use('node-loader')
+      .loader('node-loader')
+      .end();
+
+    config.module
+      .rule('webpack4_es_fallback')
+      .test(/\.js$/)
+      .include.add(/node_modules/)
+      .end()
+      .use('esbuild-loader')
+      .loader('esbuild-loader')
+      .options({ target: 'es2015', format: "cjs" })
+      .end();
+
+    // LimitChunkCountPlugin 可以通过合并块来对块进行后期处理。用以解决 chunk 包太多的问题
+    config.plugin('chunkPlugin').use(webpack.optimize.LimitChunkCountPlugin, [
+      {
+        maxChunks: 3,
+        minChunkSize: 10_000,
+      },
+    ]);
   },
   // 添加插件的配置
   pluginOptions: {
     // electron-builder的配置文件
     electronBuilder: {
       nodeIntegration: true,
-      externals: [
-        '@unblockneteasemusic/server',
-        '@unblockneteasemusic/server/src/consts',
-      ],
+      externals: ['@unblockneteasemusic/rust-napi'],
       builderOptions: {
         productName: 'YesPlayMusic',
         copyright: 'Copyright © YesPlayMusic',
@@ -114,11 +138,11 @@ module.exports = {
             },
             {
               target: 'tar.gz',
-              arch: ['x64'],
+              arch: ['x64', 'arm64'],
             },
             {
               target: 'deb',
-              arch: ['x64', 'armv7l'],
+              arch: ['x64', 'armv7l', 'arm64'],
             },
             {
               target: 'rpm',
@@ -151,6 +175,20 @@ module.exports = {
           args[0]['IS_ELECTRON'] = true;
           return args;
         });
+        config.resolve.alias.set(
+          'jsbi',
+          path.join(__dirname, 'node_modules/jsbi/dist/jsbi-cjs.js')
+        );
+
+        config.module
+          .rule('webpack4_es_fallback')
+          .test(/\.js$/)
+          .include.add(/node_modules/)
+          .end()
+          .use('esbuild-loader')
+          .loader('esbuild-loader')
+          .options({ target: 'es2015', format: "cjs" })
+          .end();
       },
       // 渲染线程的配置文件
       chainWebpackRendererProcess: config => {
@@ -164,7 +202,6 @@ module.exports = {
       },
       // 主入口文件
       // mainProcessFile: 'src/main.js',
-      mainProcessWatch: ['../netease_api/routes.js'],
       // mainProcessArgs: []
     },
   },

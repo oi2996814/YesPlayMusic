@@ -1,9 +1,11 @@
 <template>
   <div v-show="show" ref="library">
     <h1>
-      <img class="avatar" :src="data.user.avatarUrl | resizeImage" />{{
-        data.user.nickname
-      }}{{ $t('library.sLibrary') }}
+      <img
+        class="avatar"
+        :src="data.user.avatarUrl | resizeImage"
+        loading="lazy"
+      />{{ data.user.nickname }}{{ $t('library.sLibrary') }}
     </h1>
     <div class="section-one">
       <div class="liked-songs" @click="goToLikedSongsList">
@@ -24,7 +26,7 @@
               {{ liked.songs.length }} {{ $t('common.songs') }}
             </div>
           </div>
-          <button @click.stop="playLikedSongs">
+          <button @click.stop="openPlayModeTabMenu">
             <svg-icon icon-class="play" />
           </button>
         </div>
@@ -85,7 +87,14 @@
             :class="{ active: currentTab === 'cloudDisk' }"
             @click="updateCurrentTab('cloudDisk')"
           >
-            云盘
+            {{ $t('library.cloudDisk') }}
+          </div>
+          <div
+            class="tab"
+            :class="{ active: currentTab === 'playHistory' }"
+            @click="updateCurrentTab('playHistory')"
+          >
+            {{ $t('library.playHistory.title') }}
           </div>
         </div>
         <button
@@ -98,14 +107,14 @@
           v-show="currentTab === 'cloudDisk'"
           class="tab-button"
           @click="selectUploadFiles"
-          ><svg-icon icon-class="arrow-up-alt" /> 上传歌曲
+          ><svg-icon icon-class="arrow-up-alt" />{{ $t('library.uploadSongs') }}
         </button>
       </div>
 
       <div v-show="currentTab === 'playlists'">
         <div v-if="liked.playlists.length > 1">
           <CoverRow
-            :items="filterPlaylists.slice(1)"
+            :items="filterPlaylists"
             type="playlist"
             sub-text="creator"
             :show-play-button="true"
@@ -144,6 +153,32 @@
           :extra-context-menu-item="['removeTrackFromCloudDisk']"
         />
       </div>
+
+      <div v-show="currentTab === 'playHistory'">
+        <button
+          :class="{
+            'playHistory-button': true,
+            'playHistory-button--selected': playHistoryMode === 'week',
+          }"
+          @click="playHistoryMode = 'week'"
+        >
+          {{ $t('library.playHistory.week') }}
+        </button>
+        <button
+          :class="{
+            'playHistory-button': true,
+            'playHistory-button--selected': playHistoryMode === 'all',
+          }"
+          @click="playHistoryMode = 'all'"
+        >
+          {{ $t('library.playHistory.all') }}
+        </button>
+        <TrackList
+          :tracks="playHistoryList"
+          :column-number="1"
+          type="tracklist"
+        />
+      </div>
     </div>
 
     <input
@@ -165,6 +200,16 @@
         $t('contextMenu.likedPlaylists')
       }}</div>
     </ContextMenu>
+
+    <ContextMenu ref="playModeTabMenu">
+      <div class="item" @click="playLikedSongs">{{
+        $t('library.likedSongs')
+      }}</div>
+      <hr />
+      <div class="item" @click="playIntelligenceList">{{
+        $t('contextMenu.cardiacMode')
+      }}</div>
+    </ContextMenu>
   </div>
 </template>
 
@@ -183,6 +228,16 @@ import CoverRow from '@/components/CoverRow.vue';
 import SvgIcon from '@/components/SvgIcon.vue';
 import MvRow from '@/components/MvRow.vue';
 
+/**
+ * Pick the lyric part from a string formed in `[timecode] lyric`.
+ *
+ * @param {string} rawLyric The raw lyric string formed in `[timecode] lyric`
+ * @returns {string} The lyric part
+ */
+function extractLyricPart(rawLyric) {
+  return rawLyric.split(']').pop().trim();
+}
+
 export default {
   name: 'Library',
   components: { SvgIcon, CoverRow, TrackList, MvRow, ContextMenu },
@@ -192,37 +247,42 @@ export default {
       likedSongs: [],
       lyric: undefined,
       currentTab: 'playlists',
+      playHistoryMode: 'week',
     };
   },
   computed: {
     ...mapState(['data', 'liked']),
+    /**
+     * @returns {string[]}
+     */
     pickedLyric() {
-      if (this.lyric === undefined) return '';
-      let lyric = this.lyric.split('\n');
-      lyric = lyric.filter(l => {
-        if (l.includes('纯音乐，请欣赏')) {
-          if (l.includes('作词') || l.includes('作曲')) {
-            return false;
-          }
-          return true;
-        }
-        return true;
-      });
-      let lineIndex = randomNum(0, lyric.length - 1);
-      while (lineIndex + 4 > lyric.length) {
-        lineIndex = randomNum(0, lyric.length - 1);
-      }
-      return [
-        lyric[lineIndex].split(']')[1],
-        lyric[lineIndex + 1].split(']')[1],
-        lyric[lineIndex + 2].split(']')[1],
-      ];
+      /** @type {string?} */
+      const lyric = this.lyric;
+
+      // Returns [] if we got no lyrics.
+      if (!lyric) return [];
+
+      const lyricLine = lyric
+        .split('\n')
+        .filter(line => !line.includes('作词') && !line.includes('作曲'));
+
+      // Pick 3 or fewer lyrics based on the lyric lines.
+      const lyricsToPick = Math.min(lyricLine.length, 3);
+
+      // The upperBound of the lyric line to pick
+      const randomUpperBound = lyricLine.length - lyricsToPick;
+      const startLyricLineIndex = randomNum(0, randomUpperBound - 1);
+
+      // Pick lyric lines to render.
+      return lyricLine
+        .slice(startLyricLineIndex, startLyricLineIndex + lyricsToPick)
+        .map(extractLyricPart);
     },
     playlistFilter() {
       return this.data.libraryPlaylistFilter || 'all';
     },
     filterPlaylists() {
-      const playlists = this.liked.playlists;
+      const playlists = this.liked.playlists.slice(1);
       const userId = this.data.user.userId;
       if (this.playlistFilter === 'mine') {
         return playlists.filter(p => p.creator.userId === userId);
@@ -230,6 +290,15 @@ export default {
         return playlists.filter(p => p.creator.userId !== userId);
       }
       return playlists;
+    },
+    playHistoryList() {
+      if (this.show && this.playHistoryMode === 'week') {
+        return this.liked.playHistory.weekData;
+      }
+      if (this.show && this.playHistoryMode === 'all') {
+        return this.liked.playHistory.allData;
+      }
+      return [];
     },
   },
   created() {
@@ -265,9 +334,17 @@ export default {
       this.$store.dispatch('fetchLikedArtists');
       this.$store.dispatch('fetchLikedMVs');
       this.$store.dispatch('fetchCloudDisk');
+      this.$store.dispatch('fetchPlayHistory');
     },
     playLikedSongs() {
       this.$store.state.player.playPlaylistByID(
+        this.liked.playlists[0].id,
+        'first',
+        true
+      );
+    },
+    playIntelligenceList() {
+      this.$store.state.player.playIntelligenceListById(
         this.liked.playlists[0].id,
         'first',
         true
@@ -290,16 +367,12 @@ export default {
         this.liked.songs[randomNum(0, this.liked.songs.length - 1)]
       ).then(data => {
         if (data.lrc !== undefined) {
-          let ifl = data.lrc.lyric.split('\n').filter(l => {
-            if (l.includes('作词')) {
-              if (l.includes('纯音乐，请欣赏') || l.includes('作词 : 无')) {
-                return false;
-              }
-              this.lyric = data.lrc.lyric;
-              return true + ifl;
-            }
-            return false;
-          });
+          const isInstrumental = data.lrc.lyric
+            .split('\n')
+            .filter(l => l.includes('纯音乐，请欣赏'));
+          if (isInstrumental.length === 0) {
+            this.lyric = data.lrc.lyric;
+          }
         }
       });
     },
@@ -316,6 +389,9 @@ export default {
     },
     openPlaylistTabMenu(e) {
       this.$refs.playlistTabMenu.openMenu(e);
+    },
+    openPlayModeTabMenu(e) {
+      this.$refs.playModeTabMenu.openMenu(e);
     },
     changePlaylistFilter(type) {
       this.updateData({ key: 'libraryPlaylistFilter', value: type });
@@ -514,6 +590,35 @@ button.tab-button {
   &:active {
     opacity: 1;
     transform: scale(0.92);
+  }
+}
+
+button.playHistory-button {
+  color: var(--color-text);
+  border-radius: 8px;
+  padding: 6px 8px;
+  margin-bottom: 12px;
+  margin-right: 4px;
+  transition: 0.2s;
+  opacity: 0.68;
+  font-weight: 500;
+  cursor: pointer;
+  &:hover {
+    opacity: 1;
+    background: var(--color-secondary-bg);
+  }
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+button.playHistory-button--selected {
+  color: var(--color-text);
+  background: var(--color-secondary-bg);
+  opacity: 1;
+  font-weight: 700;
+  &:active {
+    transform: none;
   }
 }
 </style>

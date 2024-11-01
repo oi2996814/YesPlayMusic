@@ -1,9 +1,10 @@
 <template>
   <div class="fm" :style="{ background }" data-theme="dark">
-    <img :src="nextTrackCover" style="display: none" />
+    <img :src="nextTrackCover" style="display: none" loading="lazy" />
     <img
       class="cover"
       :src="track.album && track.album.picUrl | resizeImage(512)"
+      loading="lazy"
       @click="goToAlbum"
     />
     <div class="right-part">
@@ -13,19 +14,20 @@
       </div>
       <div class="controls">
         <div class="buttons">
-          <button-icon title="不喜欢" @click.native="moveToFMTrash"
-            ><svg-icon id="thumbs-down" icon-class="thumbs-down"
-          /></button-icon>
+          <button-icon title="不喜欢" @click.native="moveToFMTrash">
+            <svg-icon id="thumbs-down" icon-class="thumbs-down" />
+          </button-icon>
           <button-icon
             :title="$t(isPlaying ? 'player.pause' : 'player.play')"
             class="play"
             @click.native="play"
           >
-            <svg-icon :icon-class="isPlaying ? 'pause' : 'play'"
-          /></button-icon>
-          <button-icon :title="$t('player.next')" @click.native="next"
-            ><svg-icon icon-class="next" /></button-icon
-        ></div>
+            <svg-icon :icon-class="isPlaying ? 'pause' : 'play'" />
+          </button-icon>
+          <button-icon :title="$t('player.next')" @click.native="next">
+            <svg-icon icon-class="next" />
+          </button-icon>
+        </div>
         <div class="card-name"><svg-icon icon-class="fm" />私人FM</div>
       </div>
     </div>
@@ -36,7 +38,7 @@
 import ButtonIcon from '@/components/ButtonIcon.vue';
 import ArtistsInLine from '@/components/ArtistsInLine.vue';
 import { mapState } from 'vuex';
-import * as Vibrant from 'node-vibrant';
+import * as Vibrant from 'node-vibrant/dist/vibrant.worker.min.js';
 import Color from 'color';
 
 export default {
@@ -65,6 +67,11 @@ export default {
       )}?param=512y512`;
     },
   },
+  watch: {
+    track() {
+      this.getColor();
+    },
+  },
   created() {
     this.getColor();
     window.ok = this.getColor;
@@ -74,8 +81,7 @@ export default {
       this.player.playPersonalFM();
     },
     next() {
-      this.player.playNextTrack(true);
-      this.getColor();
+      this.player.playNextFMTrack();
     },
     goToAlbum() {
       if (this.track.album.id === 0) return;
@@ -83,7 +89,6 @@ export default {
     },
     moveToFMTrash() {
       this.player.moveToFMTrash();
-      this.getColor();
     },
     getColor() {
       if (!this.player.personalFMTrack?.album?.picUrl) return;

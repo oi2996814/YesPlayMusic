@@ -25,7 +25,14 @@ export default {
     albums: '專輯',
     artists: '藝人',
     mvs: 'MV',
+    cloudDisk: '雲端硬碟',
     newPlayList: '新增歌單',
+    uploadSongs: '上傳音樂',
+    playHistory: {
+      title: '聽歌排行',
+      week: '最近一周',
+      all: '所有時間',
+    },
     userProfileMenu: {
       settings: '設定',
       logout: '登出',
@@ -92,15 +99,19 @@ export default {
   },
   player: {
     like: '喜歡',
+    unlike: '取消喜歡',
     previous: '上一首',
     next: '下一首',
     repeat: '循環播放',
     repeatTrack: '單曲循環',
     shuffle: '隨機播放',
+    reversed: '倒序播放',
     play: '播放',
     pause: '暫停',
     mute: '靜音',
     nextUp: '播放清單',
+    translationLyric: '歌詞(譯)',
+    PronunciationLyric: '歌詞(音)',
   },
   modal: {
     close: '關閉',
@@ -118,6 +129,17 @@ export default {
     settings: '設定',
     logout: '登出',
     language: '語言',
+    lyric: '歌詞',
+    others: '其他',
+    customization: '自訂',
+    MusicGenrePreference: {
+      text: '音樂語種偏好',
+      none: '無偏好',
+      mandarin: '華語',
+      western: '歐美',
+      korean: '韓語',
+      japanese: '日語',
+    },
     musicQuality: {
       text: '音質選擇',
       low: '普通',
@@ -154,6 +176,9 @@ export default {
     enableGlobalShortcut: '啟用全域快捷鍵',
     showLibraryDefault: '啟動後顯示音樂庫',
     subTitleDefault: '副標題使用別名',
+    enableReversedMode: '啟用倒序播放功能 (實驗性功能)',
+    enableCustomTitlebar: '啟用自訂標題列（重新啟動後生效）',
+    showLyricsTime: '顯示目前時間',
     lyricsBackground: {
       text: '顯示歌詞背景',
       off: '關閉',
@@ -165,6 +190,39 @@ export default {
       ask: '詢問',
       exit: '退出',
       minimizeToTray: '最小化到工作列角落',
+    },
+    enableOsdlyricsSupport: {
+      title: '桌面歌詞支援',
+      desc1:
+        '只在 Linux 環境下生效。啟用後會將歌詞檔案下載至本機位置，並在開啟播放器時嘗試連帶啟動 OSDLyrics。',
+      desc2: '請在開啟之前確保您已經正確安裝了 OSDLyrics。',
+    },
+    unm: {
+      enable: '啟用',
+      audioSource: {
+        title: '備選音源',
+      },
+      enableFlac: {
+        title: '啟用 FLAC',
+        desc: '啟用後需要清除歌曲快取才能生效',
+      },
+      searchMode: {
+        title: '音源搜尋模式',
+        fast: '速度優先',
+        order: '順序優先',
+      },
+      cookie: {
+        joox: 'Joox 引擎的 Cookie',
+        qq: 'QQ 引擎的 Cookie',
+        desc1: '設定說明請參見此處',
+        desc2: '，留空則不進行相關設定',
+      },
+      ytdl: 'YtDl 引擎要使用的 youtube-dl 執行檔',
+      proxy: {
+        title: '用於 UNM 的 Proxy 伺服器',
+        desc1: '請求如 YouTube 音源服務時要使用的 Proxy 伺服器',
+        desc2: '留空則不進行相關設定',
+      },
     },
   },
   contextMenu: {
@@ -181,6 +239,9 @@ export default {
     allPlaylists: '全部歌單',
     minePlaylists: '我建立的歌單',
     likedPlaylists: '收藏的歌單',
+    cardiacMode: '心動模式',
+    copyLyric: '複製歌詞',
+    copyLyricWithTranslation: '複製歌詞（含翻譯）',
   },
   toast: {
     savedToPlaylist: '已新增至歌單',

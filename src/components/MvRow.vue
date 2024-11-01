@@ -7,7 +7,7 @@
         @mouseleave="hoverVideoID = 0"
         @click="goToMv(getID(mv))"
       >
-        <img :src="getUrl(mv)" />
+        <img :src="getUrl(mv)" loading="lazy" />
         <transition name="fade">
           <div
             v-show="hoverVideoID === getID(mv)"
@@ -73,7 +73,7 @@ export default {
           artistName = mv.creator[0].userName;
           artistID = mv.creator[0].userId;
         }
-        return `<a href="/#/artist/${artistID}">${artistName}</a>`;
+        return `<a href="/artist/${artistID}">${artistName}</a>`;
       } else if (this.subtitle === 'publishTime') {
         return mv.publishTime;
       }

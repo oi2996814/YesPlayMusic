@@ -26,7 +26,10 @@ export function dailyRecommendPlaylist(params) {
   return request({
     url: '/recommend/resource',
     method: 'get',
-    params,
+    params: {
+      params,
+      timestamp: Date.now(),
+    },
   });
 }
 /**
@@ -204,5 +207,23 @@ export function dailyRecommendTracks() {
       result.data.privileges
     );
     return result;
+  });
+}
+
+/**
+ * 心动模式/智能播放
+ * 说明 : 登录后调用此接口 , 可获取心动模式/智能播放列表 必选参数 : id : 歌曲 id
+ * - id : 歌曲 id
+ * - pid : 歌单 id
+ * - sid : 要开始播放的歌曲的 id (可选参数)
+ * @param {Object} params
+ * @param {number=} params.id
+ * @param {number=} params.pid
+ */
+export function intelligencePlaylist(params) {
+  return request({
+    url: '/playmode/intelligence/list',
+    method: 'get',
+    params,
   });
 }

@@ -25,7 +25,14 @@ export default {
     albums: '专辑',
     artists: '艺人',
     mvs: 'MV',
+    cloudDisk: '云盘',
     newPlayList: '新建歌单',
+    uploadSongs: '上传歌曲',
+    playHistory: {
+      title: '听歌排行',
+      week: '最近一周',
+      all: '所有时间',
+    },
     userProfileMenu: {
       settings: '设置',
       logout: '登出',
@@ -96,15 +103,19 @@ export default {
   },
   player: {
     like: '喜欢',
+    unlike: '取消喜欢',
     previous: '上一首',
     next: '下一首',
     repeat: '循环播放',
     repeatTrack: '单曲循环',
     shuffle: '随机播放',
+    reversed: '倒序播放',
     play: '播放',
     pause: '暂停',
     mute: '静音',
     nextUp: '播放列表',
+    translationLyric: '歌词(译)',
+    PronunciationLyric: '歌词(音)',
   },
   modal: {
     close: '关闭',
@@ -122,6 +133,17 @@ export default {
     settings: '设置',
     logout: '登出',
     language: '语言',
+    lyric: '歌词',
+    others: '其他',
+    customization: '自定义',
+    MusicGenrePreference: {
+      text: '音乐语种偏好',
+      none: '无偏好',
+      mandarin: '华语',
+      western: '欧美',
+      korean: '韩语',
+      japanese: '日语',
+    },
     musicQuality: {
       text: '音质选择',
       low: '普通',
@@ -157,17 +179,53 @@ export default {
     enableGlobalShortcut: '启用全局快捷键',
     showLibraryDefault: '启动后显示音乐库',
     subTitleDefault: '副标题使用别名',
+    enableReversedMode: '启用倒序播放功能 (实验性功能)',
+    enableCustomTitlebar: '启用自定义标题栏 (重启后生效)',
     lyricsBackground: {
       text: '显示歌词背景',
       off: '关闭',
       on: '打开',
       dynamic: '动态（GPU 占用较高）',
     },
+    showLyricsTime: '显示当前时间',
     closeAppOption: {
       text: '关闭主面板时...',
       ask: '询问',
       exit: '退出',
       minimizeToTray: '最小化到托盘',
+    },
+    enableOsdlyricsSupport: {
+      title: '桌面歌词支持',
+      desc1:
+        '仅 Linux 下生效。启用后会将歌词文件下载到本地，并在开启播放器时尝试拉起 OSDLyrics。',
+      desc2: '请在开启之前确保您已经正确安装了 OSDLyrics。',
+    },
+    unm: {
+      enable: '启用',
+      audioSource: {
+        title: '备选音源',
+      },
+      enableFlac: {
+        title: '启用 FLAC',
+        desc: '启用后需要清除歌曲缓存才能生效',
+      },
+      searchMode: {
+        title: '音源搜索模式',
+        fast: '速度优先',
+        order: '顺序优先',
+      },
+      cookie: {
+        joox: 'Joox 引擎的 Cookie',
+        qq: 'QQ 引擎的 Cookie',
+        desc1: '设置说明请参见此处',
+        desc2: '，留空则不进行相关设置',
+      },
+      ytdl: 'YtDl 引擎要使用的 youtube-dl 可执行文件',
+      proxy: {
+        title: '用于 UNM 的代理服务器',
+        desc1: '请求如 YouTube 音源服务时要使用的代理服务器',
+        desc2: '留空则不进行相关设置',
+      },
     },
   },
   contextMenu: {
@@ -184,6 +242,9 @@ export default {
     allPlaylists: '全部歌单',
     minePlaylists: '创建的歌单',
     likedPlaylists: '收藏的歌单',
+    cardiacMode: '心动模式',
+    copyLyric: '复制歌词',
+    copyLyricWithTranslation: '复制歌词（含翻译）',
   },
   toast: {
     savedToPlaylist: '已添加到歌单',
